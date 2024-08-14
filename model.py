@@ -30,7 +30,7 @@ def apply_model(image_path):
         model = models.Cellpose(gpu=False, model_type='cyto')
         
         # Segment the image using Cellpose
-        masks, flows, styles, diams = model.eval(img_slice, diameter=None, flow_threshold=None, cellprob_threshold=None)
+        masks, flows, styles, diams = model.eval(img_slice, diameter=15.0, flow_threshold=0.4, cellprob_threshold=0.0)
         
         # Append the segmented mask to the list
         segmented_images.append(Image.fromarray(masks.astype(np.uint16)))
