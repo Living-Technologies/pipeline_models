@@ -2,7 +2,7 @@ import sys
 import numpy as np
 from PIL import Image
 from stardist.models import StarDist2D
-from skimage import io
+from stardist import export_imagej_rois
 
 def apply_model(image_path):
     # Load the image stack
@@ -28,17 +28,9 @@ def apply_model(image_path):
     for i in range(images.shape[0]):
         img_slice = images[i]
         labels, img = model.predict_instances(img_slice)
-        masks.append(img)
-    
-    masks = np.stack(masks, axis=0)
 
-    # Save the results manually
-    output_path = image_path.replace('.tif', '_stardist.tif')
-    for i in range(masks.shape[0]):
-        slice_output_path = f"{output_path}_{i}.tif"
-        io.imsave(slice_output_path, masks[i].astype(np.uint16))
-  
-    print(f"Processed images saved as {output_path}")
+        save_tiff_imagej_compatible(f'img{i}.tif', img, axes='ZYX')
+        save_tiff_imagej_compatible(f'img{i}_labels.tif', labels, axes='ZYX')
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
