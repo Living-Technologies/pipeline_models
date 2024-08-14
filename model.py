@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from PIL import Image
 from cellpose import models
+from skimage import io
 
 def apply_model(image_path):
     # Load the image stack
@@ -18,7 +19,7 @@ def apply_model(image_path):
     
     # Convert list of images to a NumPy array
     images = np.stack(images, axis=0)
-    
+
     # Initialize Cellpose model
     model = models.Cellpose(gpu=False, model_type='cyto')
     
@@ -39,16 +40,10 @@ def apply_model(image_path):
         print(f"Error during model evaluation: {e}")
         sys.exit(1)
 
-    # Convert masks to PIL images
-    masks_images = [Image.fromarray(m.astype(np.uint16)) for m in masks]
-    
-    # Output path
+    # Save the results manually
     output_path = image_path.replace('.tif', '_cellpose.tif')
-
-    # Save the results as a multi-page TIFF
-    if masks_images:
-        masks_images[0].save(output_path, save_all=True, append_images=masks_images[1:], compression="tiff_deflate")
-
+    io.imsave(output_path, masks.astype(np.uint16))
+  
     print(f"Processed image saved as {output_path}")
 
 if __name__ == "__main__":
