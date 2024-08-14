@@ -2,7 +2,6 @@ import sys
 import numpy as np
 from PIL import Image
 from cellpose import models
-from skimage import io
 
 def apply_model(image_path):
     # Load the image stack
@@ -24,9 +23,9 @@ def apply_model(image_path):
     model = models.Cellpose(gpu=False, model_type='cyto')
     
     # Define parameters for Cellpose
-    diameter = 15.0  # You can adjust this based on your data
-    flow_threshold = 0.4  # Typical value for flow threshold
-    cellprob_threshold = 0.0  # Minimum value for cell probability
+    diameter = 15.0  # Adjust based on your data
+    flow_threshold = 0.4
+    cellprob_threshold = 0.0
 
     # Apply Cellpose model
     try:
@@ -40,10 +39,16 @@ def apply_model(image_path):
         print(f"Error during model evaluation: {e}")
         sys.exit(1)
 
-    # Save the results manually
+    # Save the results as a multi-page TIFF
     output_path = image_path.replace('.tif', '_cellpose.tif')
-    io.imsave(output_path, masks.astype(np.uint16))
-  
+    
+    # Convert masks to uint16 for TIFF
+    masks = masks.astype(np.uint16)
+
+    # Save all slices to a multi-page TIFF
+    images_to_save = [Image.fromarray(masks[i]) for i in range(masks.shape[0])]
+    images_to_save[0].save(output_path, save_all=True, append_images=images_to_save[1:], compression='tiff_deflate')
+
     print(f"Processed image saved as {output_path}")
 
 if __name__ == "__main__":
