@@ -22,10 +22,10 @@ def apply_model(image_path):
     # Initialize Cellpose model
     model = models.Cellpose(gpu=False, model_type='cyto')
     
-    # Define parameters for Cellpose
-    diameter = None  # Use default model diameter
-    flow_threshold = None  # Default value for flow threshold
-    cellprob_threshold = None  # Default value for cell probability threshold
+    # Define parameters for Cellpose with default values
+    diameter = 15.0  # You can adjust this based on your data
+    flow_threshold = 0.4  # Typical value for flow threshold
+    cellprob_threshold = 0.0  # Minimum value for cell probability
 
     # Apply Cellpose model
     try:
