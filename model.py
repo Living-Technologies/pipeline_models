@@ -1,7 +1,5 @@
 import sys
-import os
 import numpy as np
-import cv2
 from PIL import Image
 from cellpose import models, io
 
@@ -24,8 +22,22 @@ def apply_model(image_path):
     # Initialize Cellpose model
     model = models.Cellpose(gpu=False, model_type='cyto')
     
+    # Define parameters for Cellpose
+    diameter = None  # Use default model diameter
+    flow_threshold = None  # Default value for flow threshold
+    cellprob_threshold = None  # Default value for cell probability threshold
+
     # Apply Cellpose model
-    masks, flows, styles, diams = model.eval(images, diameter=None, flow_threshold=None, cellprob_threshold=None)
+    try:
+        masks, flows, styles, diams = model.eval(
+            images,
+            diameter=diameter,
+            flow_threshold=flow_threshold,
+            cellprob_threshold=cellprob_threshold
+        )
+    except TypeError as e:
+        print(f"Error during model evaluation: {e}")
+        sys.exit(1)
 
     # Save the results as a new multi-page TIFF
     output_path = image_path.replace('.tif', '_cellpose.tif')
@@ -34,5 +46,8 @@ def apply_model(image_path):
     print(f"Processed image saved as {output_path}")
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python model.py <image_path>")
+        sys.exit(1)
     image_path = sys.argv[1]  # Get the image path from the command line arguments
     apply_model(image_path)
