@@ -18,14 +18,14 @@ def apply_model(image_path):
     
     # Convert list of images to a NumPy array
     images = np.stack(images, axis=0)
-
+    
     # Initialize Cellpose model
     model = models.Cellpose(gpu=False, model_type='cyto')
     
     # Define parameters for Cellpose
-    diameter = 15.0  # Adjust based on your data
-    flow_threshold = 0.4
-    cellprob_threshold = 0.0
+    diameter = 15.0  # You can adjust this based on your data
+    flow_threshold = 0.4  # Typical value for flow threshold
+    cellprob_threshold = 0.0  # Minimum value for cell probability
 
     # Apply Cellpose model
     try:
@@ -39,15 +39,15 @@ def apply_model(image_path):
         print(f"Error during model evaluation: {e}")
         sys.exit(1)
 
-    # Save the results as a multi-page TIFF
-    output_path = image_path.replace('.tif', '_cellpose.tif')
+    # Convert masks to PIL images
+    masks_images = [Image.fromarray(m.astype(np.uint16)) for m in masks]
     
-    # Convert masks to uint16 for TIFF
-    masks = masks.astype(np.uint16)
+    # Output path
+    output_path = image_path.replace('.tif', '_cellpose.tif')
 
-    # Save all slices to a multi-page TIFF
-    images_to_save = [Image.fromarray(masks[i]) for i in range(masks.shape[0])]
-    images_to_save[0].save(output_path, save_all=True, append_images=images_to_save[1:], compression='tiff_deflate')
+    # Save the results as a multi-page TIFF
+    if masks_images:
+        masks_images[0].save(output_path, save_all=True, append_images=masks_images[1:], compression="tiff_deflate")
 
     print(f"Processed image saved as {output_path}")
 
