@@ -22,15 +22,12 @@ def apply_model(image_path):
 
     # Initialize StarDist model
     model = StarDist2D.from_pretrained('2D_versatile_fluo')
-    
-    # Define parameters for StarDist
-    prob_thresh = 0.5  # Adjust this threshold based on your data
 
     # Apply StarDist model
     masks = []
     for i in range(images.shape[0]):
         img_slice = images[i]
-        labels, _ = model.predict(img_slice, prob_thresh=prob_thresh)
+        labels, _ = model.predict_instances(img_slice)
         masks.append(labels)
     
     masks = np.stack(masks, axis=0)
