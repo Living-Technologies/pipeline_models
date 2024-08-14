@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 from PIL import Image
-from cellpose import models
+from stardist.models import StarDist2D
 from skimage import io
 
 def apply_model(image_path):
@@ -20,28 +20,23 @@ def apply_model(image_path):
     # Convert list of images to a NumPy array
     images = np.stack(images, axis=0)
 
-    # Initialize Cellpose model
-    model = models.Cellpose(gpu=False, model_type='cyto')
+    # Initialize StarDist model
+    model = StarDist2D.from_pretrained('2D_versatile_fluo')
     
-    # Define parameters for Cellpose
-    diameter = 15.0  # You can adjust this based on your data
-    flow_threshold = 0.4  # Typical value for flow threshold
-    cellprob_threshold = 0.0  # Minimum value for cell probability
+    # Define parameters for StarDist
+    prob_thresh = 0.5  # Adjust this threshold based on your data
 
-    # Apply Cellpose model
-    try:
-        masks, flows, styles, diams = model.eval(
-            images,
-            diameter=diameter,
-            flow_threshold=flow_threshold,
-            cellprob_threshold=cellprob_threshold
-        )
-    except TypeError as e:
-        print(f"Error during model evaluation: {e}")
-        sys.exit(1)
+    # Apply StarDist model
+    masks = []
+    for i in range(images.shape[0]):
+        img_slice = images[i]
+        labels, _ = model.predict(img_slice, prob_thresh=prob_thresh)
+        masks.append(labels)
+    
+    masks = np.stack(masks, axis=0)
 
-    # Save all slices in the Z-axis
-    output_path = image_path.replace('.tif', '_cellpose.tif')
+    # Save the results manually
+    output_path = image_path.replace('.tif', '_stardist.tif')
     for i in range(masks.shape[0]):
         slice_output_path = f"{output_path}_{i}.tif"
         io.imsave(slice_output_path, masks[i].astype(np.uint16))
@@ -50,7 +45,7 @@ def apply_model(image_path):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python model.py <image_path>")
+        print("Usage: python model_stardist.py <image_path>")
         sys.exit(1)
     image_path = sys.argv[1]  # Get the image path from the command line arguments
     apply_model(image_path)
