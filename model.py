@@ -28,4 +28,6 @@ def apply_model(image_path):
 
 if __name__ == "__main__":
     image_path = sys.argv[1]  # Get the image path from the command line arguments
+    for arg, i in enumerate(sys.argv):
+        print(arg, i)
     apply_model(image_path)
