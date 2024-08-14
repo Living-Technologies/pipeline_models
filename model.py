@@ -27,5 +27,5 @@ def apply_model(image_path):
     print(f"Thresholded image saved as {output_path}")
 
 if __name__ == "__main__":
-    image_path = sys.argv[2]  # Get the image path from the command line arguments
+    image_path = sys.argv[1]  # Get the image path from the command line arguments
     apply_model(image_path)
