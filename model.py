@@ -31,7 +31,7 @@ def apply_model(image_path):
         blurred_images.append(Image.fromarray(blurred_img))
 
     # Save the blurred images as a new multi-page TIFF
-    output_path = image_path.replace('.tif', '_gaussian_blur.tif')
+    output_path = image_path.replace('.tif', '_gaussian.tif')
     blurred_images[0].save(output_path, save_all=True, append_images=blurred_images[1:])
     print(f"Gaussian-blurred image saved as {output_path}")
 
