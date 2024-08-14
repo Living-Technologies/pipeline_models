@@ -40,11 +40,13 @@ def apply_model(image_path):
         print(f"Error during model evaluation: {e}")
         sys.exit(1)
 
-    # Save the results manually
+    # Save all slices in the Z-axis
     output_path = image_path.replace('.tif', '_cellpose.tif')
-    io.imsave(output_path, masks.astype(np.uint16))
+    for i in range(masks.shape[0]):
+        slice_output_path = f"{output_path}_{i}.tif"
+        io.imsave(slice_output_path, masks[i].astype(np.uint16))
   
-    print(f"Processed image saved as {output_path}")
+    print(f"Processed images saved as {output_path}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
