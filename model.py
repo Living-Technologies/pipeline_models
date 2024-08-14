@@ -2,7 +2,7 @@ import sys
 import numpy as np
 from PIL import Image
 from stardist.models import StarDist2D
-from skimage import io
+from stardist.utils import save_tiff_imagej_compatible
 
 def apply_model(image_path):
     # Load the image stack
@@ -34,11 +34,9 @@ def apply_model(image_path):
 
     # Save the results manually
     output_path = image_path.replace('.tif', '_stardist.tif')
-    for i in range(masks.shape[0]):
-        slice_output_path = f"{output_path}_{i}.tif"
-        io.imsave(slice_output_path, masks[i].astype(np.uint16))
+    save_tiff_imagej_compatible(output_path, masks, axes='TZYX')
   
-    print(f"Processed images saved as {output_path}")
+    print(f"Processed image stack saved as {output_path}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
