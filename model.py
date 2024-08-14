@@ -7,8 +7,8 @@ def apply_model(image_path):
     # Open the TIFF file using PIL to handle multi-page TIFFs
     img = Image.open(image_path)
     
-    # Initialize an array to store the thresholded images
-    thresholded_images = []
+    # Initialize an array to store the blurred images
+    blurred_images = []
 
     # Loop through each slice (page) in the TIFF
     for i in range(img.n_frames):
@@ -24,16 +24,16 @@ def apply_model(image_path):
         if len(img_slice.shape) > 2:
             img_slice = cv2.cvtColor(img_slice, cv2.COLOR_BGR2GRAY)
         
-        # Apply Otsu's thresholding
-        _, otsu_thresh = cv2.threshold(img_slice, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        # Apply Gaussian blur
+        blurred_img = cv2.GaussianBlur(img_slice, (5, 5), 0)
         
-        # Append the thresholded slice to the list
-        thresholded_images.append(Image.fromarray(otsu_thresh))
+        # Append the blurred slice to the list
+        blurred_images.append(Image.fromarray(blurred_img))
 
-    # Save the thresholded images as a new multi-page TIFF
-    output_path = image_path.replace('.tif', '_otsu.tif')
-    thresholded_images[0].save(output_path, save_all=True, append_images=thresholded_images[1:])
-    print(f"Otsu-thresholded image saved as {output_path}")
+    # Save the blurred images as a new multi-page TIFF
+    output_path = image_path.replace('.tif', '_gaussian_blur.tif')
+    blurred_images[0].save(output_path, save_all=True, append_images=blurred_images[1:])
+    print(f"Gaussian-blurred image saved as {output_path}")
 
 if __name__ == "__main__":
     image_path = sys.argv[1]  # Get the image path from the command line arguments
