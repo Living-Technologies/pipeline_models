@@ -45,7 +45,8 @@ def apply_model(image_path):
     for i in range(masks.shape[0]):
         slice_output_path = f"{output_path}_{i}.tif"
         io.imsave(slice_output_path, masks[i].astype(np.uint16))
-  
+        
+    masks[0].save(output_path, save_all=True, append_images=masks[1:])  
     print(f"Processed images saved as {output_path}")
 
 if __name__ == "__main__":
