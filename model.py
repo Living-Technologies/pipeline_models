@@ -31,7 +31,7 @@ def apply_model(image_path):
         thresholded_images.append(Image.fromarray(otsu_thresh))
 
     # Save the thresholded images as a new multi-page TIFF
-    output_path = image_path.replace('.tif', '_otsu.tif')
+    output_path = image_path.replace('temp', 'otsu')
     thresholded_images[0].save(output_path, save_all=True, append_images=thresholded_images[1:])
     print(f"Otsu-thresholded image saved as {output_path}")
 
