@@ -31,7 +31,7 @@ def apply_model(image_path):
         edge_detected_images.append(Image.fromarray(edges))
 
     # Save the edge-detected images as a new multi-page TIFF
-    output_path = image_path.replace('.tif', '_canny.tif')
+    output_path = image_path.replace('temp', 'canny')
     edge_detected_images[0].save(output_path, save_all=True, append_images=edge_detected_images[1:])
     print(f"Edge-detected image saved as {output_path}")
 
