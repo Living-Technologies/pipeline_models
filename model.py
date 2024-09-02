@@ -41,7 +41,7 @@ def apply_model(image_path):
         sys.exit(1)
 
     # Save the results manually
-    output_path = image_path.replace('.tif', '_cellpose.tif')
+    output_path = image_path.replace('temp', 'cellpose')
     io.imsave(output_path, masks.astype(np.uint16))
   
     print(f"Processed image saved as {output_path}")
